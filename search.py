@@ -135,7 +135,7 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     pqueue = PriorityQueue()
-    visited_costs = {} # maps state to cost
+    visited_costs = {} # maps location to cost
 
     pqueue.push((problem.getStartState(), [], 0), 0) # (location, path, cost), priority
     while not pqueue.isEmpty():
@@ -169,7 +169,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         return cost + heuristic(location, problem)
 
     hqueue = PriorityQueueWithFunction(priorityFunction)
-    visited_costs = {} # maps state to cost
+    visited_costs = {} # maps location to cost
 
     hqueue.push((problem.getStartState(), [], 0)) # (location, path, cost)
     while not hqueue.isEmpty():

@@ -104,6 +104,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
         if location not in visited:
             visited.add(location)
+
             for successor, action, _ in problem.getSuccessors(location):
                 if successor not in visited:
                     stack.push((successor, path + [action]))
@@ -125,6 +126,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
         if location not in visited:
             visited.add(location)
+
             for successor, action, _ in problem.getSuccessors(location):
                 if successor not in visited:
                     queue.push((successor, path + [action]))
@@ -134,7 +136,24 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pqueue = PriorityQueue()
+    visited_costs = {} # maps state to cost
+
+    pqueue.push((problem.getStartState(), [], 0), 0) # (state, path, cost), priority
+    while not pqueue.isEmpty():
+        location, path, cost = pqueue.pop()
+
+        if problem.isGoalState(location):
+            return path
+
+        if location not in visited_costs or visited_costs[location] > cost:
+            visited_costs[location] = cost
+
+            for successor, action, step_cost in problem.getSuccessors(location):
+                new_cost = cost + step_cost
+                pqueue.update((successor, path + [action], new_cost), new_cost)
+
+    return []
 
 def nullHeuristic(state, problem=None) -> float:
     """

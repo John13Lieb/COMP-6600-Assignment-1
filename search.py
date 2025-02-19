@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
@@ -20,7 +19,7 @@ Pacman agents (in searchAgents.py).
 import util
 from game import Directions
 from typing import List
-from util import Stack, Queue, PriorityQueue
+from util import Stack, Queue, PriorityQueue, PriorityQueueWithFunction
 
 class SearchProblem:
     """
@@ -64,9 +63,6 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-
-
-
 def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -107,7 +103,8 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
             for successor, action, _ in problem.getSuccessors(location):
                 if successor not in visited:
-                    stack.push((successor, path + [action]))
+                    new_path = path + [action]
+                    stack.push((successor, new_path))
 
     return []
 
@@ -129,7 +126,8 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
             for successor, action, _ in problem.getSuccessors(location):
                 if successor not in visited:
-                    queue.push((successor, path + [action]))
+                    new_path = path + [action]
+                    queue.push((successor, new_path))
 
     return []
 
@@ -139,7 +137,7 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     pqueue = PriorityQueue()
     visited_costs = {} # maps state to cost
 
-    pqueue.push((problem.getStartState(), [], 0), 0) # (state, path, cost), priority
+    pqueue.push((problem.getStartState(), [], 0), 0) # (location, path, cost), priority
     while not pqueue.isEmpty():
         location, path, cost = pqueue.pop()
 
@@ -151,7 +149,8 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
 
             for successor, action, step_cost in problem.getSuccessors(location):
                 new_cost = cost + step_cost
-                pqueue.update((successor, path + [action], new_cost), new_cost)
+                new_path = path + [action]
+                pqueue.update((successor, new_path, new_cost), new_cost)
 
     return []
 
@@ -165,7 +164,29 @@ def nullHeuristic(state, problem=None) -> float:
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    def priorityFunction(node):
+        location, path, cost = node
+        return cost + heuristic(location, problem)
+
+    hqueue = PriorityQueueWithFunction(priorityFunction)
+    visited_costs = {} # maps state to cost
+
+    hqueue.push((problem.getStartState(), [], 0)) # (location, path, cost)
+    while not hqueue.isEmpty():
+        location, path, cost = hqueue.pop()
+
+        if problem.isGoalState(location):
+            return path
+
+        if location not in visited_costs or visited_costs[location] > cost:
+            visited_costs[location] = cost
+
+            for successor, action, step_cost in problem.getSuccessors(location):
+                new_cost = cost + step_cost
+                new_path = path + [action]
+                hqueue.push((successor, new_path, new_cost))
+
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch

@@ -86,12 +86,29 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    print("Start:", problem.getStartState()) -- returns coordinates (x, y)
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState())) -- returns True/False
+    print("Start's successors:", problem.getSuccessors(problem.getStartState())) -- returns list of tuples
+    (successor, action, stepCost)
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    stack = Stack()
+    visited, path = set(), []
+
+    stack.push((problem.getStartState(), []))
+    while not stack.isEmpty():
+        location, path = stack.pop()
+
+        if problem.isGoalState(location):
+            return path
+
+        if location not in visited:
+            visited.add(location)
+            for successor, action, _ in problem.getSuccessors(location):
+                if successor not in visited:
+                    stack.push((successor, path + [action]))
+
+    return []
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""

@@ -39,6 +39,7 @@ from game import Directions
 from game import Agent
 from game import Actions
 import util
+from util import manhattanDistance
 import time
 import search
 import pacman
@@ -327,8 +328,8 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            currentPosition, corners = state
-            x, y = currentPosition
+            current_position, corners_visited = state
+            x, y = current_position
 
             # calculate the next position
             dx, dy = Actions.directionToVector(action)
@@ -336,14 +337,14 @@ class CornersProblem(search.SearchProblem):
 
             # check if the next position is not a wall
             if not self.walls[nextx][nexty]:
-                new_corners = list(corners)
+                corners_visited_copy = list(corners_visited)
 
                 # check if the next position is a corner
                 if (nextx, nexty) in self.corners:
                     index = self.corners.index((nextx, nexty))
-                    new_corners[index] = 1
+                    corners_visited_copy[index] = 1
 
-                next_state = ((nextx, nexty), tuple(new_corners))
+                next_state = ((nextx, nexty), tuple(corners_visited_copy))
                 successors.append((next_state, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -381,7 +382,18 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    if problem.isGoalState(state):
+        return 0
+
+    distances = []
+    current_position, corners_visited = state
+
+    for index, corner in enumerate(corners):
+        if corners_visited[index] == 0:
+            distance = manhattanDistance(current_position, corner)
+            distances.append(distance)
+
+    return max(distances) # distance to the farthest corner (overestimates or equal to the actual distance)
 
 
 
@@ -472,7 +484,16 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    food_list = foodGrid.asList()
+
+    if len(food_list) == 0:
+        return 0
+
+    distance = []
+    for food in food_list:
+        distance.append(mazeDistance(position, food, problem.startingGameState))
+
+    return max(distance, default=0)
 
 
 class ClosestDotSearchAgent(SearchAgent):

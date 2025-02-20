@@ -38,10 +38,11 @@ from typing import List, Tuple, Any
 from game import Directions
 from game import Agent
 from game import Actions
-import util
+# import util
 from util import manhattanDistance
 import time
 import search
+from search import breadthFirstSearch
 import pacman
 
 class GoWestAgent(Agent):
@@ -525,7 +526,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -561,7 +562,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state in self.food.asList()
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """

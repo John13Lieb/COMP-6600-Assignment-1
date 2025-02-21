@@ -494,7 +494,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     for food in food_list:
         distance.append(mazeDistance(position, food, problem.startingGameState))
 
-    return max(distance, default=0)
+    return max(distance)
 
 
 class ClosestDotSearchAgent(SearchAgent):
